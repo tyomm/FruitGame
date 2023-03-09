@@ -1,55 +1,41 @@
-import kivy
 from kivy.app import App
+from kivy.core.audio import SoundLoader
+from kivy.core.window import Window
+from kivy.uix.image import Image
 from kivy.uix.label import Label
-from kivy.uix.gridlayout import GridLayout
-from kivy.uix.textinput import TextInput
+from kivy.uix.floatlayout import FloatLayout
+from kivy.clock import Clock
+from random import randint
 from kivy.uix.button import Button
+from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 
 
+class MainScreen(Screen):
+    def __init__(self, **kwargs):
+        super(MainScreen, self).__init__(**kwargs)
+        self.add_widget(Button(text="Start", size_hint=(0.2, 0.1), pos_hint={'x': 0.4, 'y': 0.1}, on_press=self.pressed))
 
-class Grid(GridLayout):
-  def __init__(self, **kwargs):
-    super(Grid, self).__init__(**kwargs)
-    self.cols = 1
+    def pressed(self, instance):
+        print("Button Pressed!! !== meow ==!")
+        screen_manager.transition = SlideTransition(direction='left')
+        screen_manager.switch_to(SecondScreen())
 
-    self.inside = GridLayout()
-    self.inside.cols = 2
-    
-    self.inside.add_widget(Label(text = "First Name: "))
-    self.first_name = TextInput (multiline = False)
-    self.inside.add_widget(self.first_name)
+class SecondScreen(Screen):
+    def __init__(self, **kwargs):
+        super(SecondScreen, self).__init__(**kwargs)
+        self.add_widget(Image(source='main/watermelon.png', pos_hint={'center_x': 0.5, 'center_y': 0.5}))  # Here the image that we want to hit with knife
 
-    self.inside.add_widget(Label(text = "Last Name: "))
-    self.last_name = TextInput (multiline = False)
-    self.inside.add_widget(self.last_name)
-
-    self.inside.add_widget(Label(text = "Email: "))
-    self.email = TextInput (multiline = False)
-    self.inside.add_widget(self.email)
+class MyScreenManager(ScreenManager):
+    pass
 
 
-    self.add_widget(self.inside)
-    
-    self.submit = Button(text = "Submit", font_size = 40)
-    self.submit.bind(on_press = self.pressed)
-    self.add_widget(self.submit)
+class FruitGameApp(App):
+    def build(self):
+        global screen_manager
+        screen_manager = MyScreenManager()
+        screen_manager.add_widget(MainScreen(name="main"))
+        return screen_manager
 
-  def pressed(self, instance):
-    # geting info from the button we typed
-    first_name = self.first_name.text
-    last_name = self.last_name.text
-    email = self.email.text
 
-    print("first name: ", first_name, "last name: ", last_name, "email: ", email)
-    # clearing info from the button when we press the "Submit" button
-
-    self.first_name.text = ""
-    self.last_name.text = ""
-    self.email.text = ""
-    
-class MyApp (App):
-  def buld(self):
-    return (Grid())
-
-if __name__ == "__main__":
-  MyApp().run()
+if __name__ == '__main__':
+    FruitGameApp().run()
